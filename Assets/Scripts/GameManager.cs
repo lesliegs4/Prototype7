@@ -39,7 +39,7 @@ namespace Prototype7
         [SerializeField] private AudioClip winClip;
 
         [SerializeField, Range(0f, 1f)] private float swooshVolume = 1f;
-        [SerializeField, Range(0f, 1f)] private float fireballVolume = 0.85f; // slightly lower
+        [SerializeField, Range(0f, 1f)] private float fireballVolume = 0.765f; // 10% lower than 0.85
         [SerializeField, Range(0f, 1f)] private float loseVolume = 0.80f; // slightly lower
         [SerializeField, Range(0f, 1f)] private float winVolume = 1f;
 

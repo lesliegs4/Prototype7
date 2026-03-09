@@ -1,0 +1,455 @@
+fileFormatVersion: 2
+guid: 2125a291e5faa41c2a6dd24d02e08753
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7031265734320370657
+    second: soot3 (1)_0
+  - first:
+      213: 901406947741760374
+    second: soot3 (1)_1
+  - first:
+      213: -1797785856571752430
+    second: soot3 (1)_2
+  - first:
+      213: -714463348454562792
+    second: soot3 (1)_3
+  - first:
+      213: 5308199463677344484
+    second: soot3 (1)_4
+  - first:
+      213: -614796771622941146
+    second: soot3 (1)_5
+  - first:
+      213: 570556641554417819
+    second: soot3 (1)_6
+  - first:
+      213: -5656600221539116287
+    second: soot3 (1)_7
+  - first:
+      213: -8922196315358871487
+    second: soot3 (1)_8
+  - first:
+      213: -1844980624030787823
+    second: soot3 (1)_9
+  - first:
+      213: 5049370884819410376
+    second: soot3 (1)_10
+  - first:
+      213: -8267738452165189685
+    second: soot3 (1)_11
+  - first:
+      213: 7418554276055927620
+    second: soot3 (1)_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: soot3 (1)_0
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 889
+        width: 44
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1c4570611deb6e90800000000000000
+      internalID: -7031265734320370657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_1
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 759
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67b7736d7d0728c00800000000000000
+      internalID: 901406947741760374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_2
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 772
+        width: 31
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 210c1dcd94bfc07e0800000000000000
+      internalID: -1797785856571752430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_3
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 694
+        width: 31
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8146456be57b516f0800000000000000
+      internalID: -714463348454562792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_4
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 590
+        width: 44
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ea3865c9438aa940800000000000000
+      internalID: 5308199463677344484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_5
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 652
+        width: 32
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62e8b52f79dc777f0800000000000000
+      internalID: -614796771622941146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_6
+      rect:
+        serializedVersion: 2
+        x: 604
+        y: 551
+        width: 57
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9847181e360be700800000000000000
+      internalID: 570556641554417819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_7
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 525
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10bd3c68118bf71b0800000000000000
+      internalID: -5656600221539116287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_8
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 540
+        width: 57
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1404cb619bdfd2480800000000000000
+      internalID: -8922196315358871487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_9
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 532
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1179a27c5ef4566e0800000000000000
+      internalID: -1844980624030787823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_10
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 83
+        width: 291
+        height: 396
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cd5cd82118f21640800000000000000
+      internalID: 5049370884819410376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_11
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 449
+        width: 70
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcf1bde9ea7134d80800000000000000
+      internalID: -8267738452165189685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: soot3 (1)_12
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 460
+        width: 44
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44bc4431fcff3f660800000000000000
+      internalID: 7418554276055927620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      soot3 (1)_0: -7031265734320370657
+      soot3 (1)_1: 901406947741760374
+      soot3 (1)_10: 5049370884819410376
+      soot3 (1)_11: -8267738452165189685
+      soot3 (1)_12: 7418554276055927620
+      soot3 (1)_2: -1797785856571752430
+      soot3 (1)_3: -714463348454562792
+      soot3 (1)_4: 5308199463677344484
+      soot3 (1)_5: -614796771622941146
+      soot3 (1)_6: 570556641554417819
+      soot3 (1)_7: -5656600221539116287
+      soot3 (1)_8: -8922196315358871487
+      soot3 (1)_9: -1844980624030787823
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

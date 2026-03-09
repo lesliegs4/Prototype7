@@ -11,6 +11,7 @@ namespace Prototype7
         private const string RootName = "__Prototype7_Root";
         private const string BackgroundName = "Background";
         private const string SpawnerName = "Spawner";
+        private const string BgMusicName = "BGMusic";
 
         private static int _lastBootstrappedSceneHandle = -1;
 
@@ -82,6 +83,7 @@ namespace Prototype7
             EnsureBackground(root.transform, gm, cam);
             EnsurePlayer(root.transform, gm, cam);
             EnsureSpawner(root.transform, gm, cam);
+            EnsureBgMusic(root.transform);
 
             gm.BeginRun();
         }
@@ -194,6 +196,48 @@ namespace Prototype7
             var spawner = spawnerGo.GetComponent<HazardSpawner>();
             if (spawner == null) spawner = spawnerGo.AddComponent<HazardSpawner>();
             spawner.Bind(gm, cam);
+        }
+
+        private static void EnsureBgMusic(Transform root)
+        {
+            // Prefer an existing scene object if the user already added one.
+            var go = GameObject.Find("bgmusic") ?? GameObject.Find(BgMusicName);
+            if (go == null)
+            {
+                go = new GameObject(BgMusicName);
+                go.transform.SetParent(root, worldPositionStays: true);
+                go.transform.position = Vector3.zero;
+            }
+
+            var src = go.GetComponent<AudioSource>();
+            if (src == null) src = go.AddComponent<AudioSource>();
+
+            src.playOnAwake = true;
+            src.loop = true;
+            src.spatialBlend = 0f; // 2D
+            src.volume = 0.22f; // keep SFX above music
+
+            if (src.clip == null)
+                src.clip = TryLoadMusicClip();
+
+            if (src.clip != null && !src.isPlaying)
+                src.Play();
+        }
+
+        private static AudioClip TryLoadMusicClip()
+        {
+            // Build-friendly if you move the mp3 to Assets/Resources/Audio/ and name it without extension.
+            var clip = Resources.Load<AudioClip>("Audio/ihatetuesdays-jungle-ish-beat-for-video-games-314073");
+            if (clip != null) return clip;
+
+#if UNITY_EDITOR
+            // Editor fallback: load directly from Assets/Audio.
+            const string path = "Assets/Audio/ihatetuesdays-jungle-ish-beat-for-video-games-314073.mp3";
+            clip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+            if (clip != null) return clip;
+#endif
+
+            return null;
         }
     }
 }

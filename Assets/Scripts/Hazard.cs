@@ -2,14 +2,11 @@ using UnityEngine;
 
 namespace Prototype7
 {
-    [RequireComponent(typeof(SpriteRenderer))]
     public sealed class Hazard : MonoBehaviour
     {
-        private const float PixelShrink = 5f;
         private const float OffscreenSafetyPaddingY = 0.05f;
-        private const float PreVisibleCounterClockwiseDeg = 45f;
-        private const float TravelAngleMinDeg = -60f;
-        private const float TravelAngleMaxDeg = 60f;
+        private const float TravelAngleMinDeg = -30f;
+        private const float TravelAngleMaxDeg = 30f;
 
         [SerializeField] private float animationFps = 12f;
 
@@ -26,40 +23,35 @@ namespace Prototype7
 
         private float _baseUniformScale = 1f;
 
-        public void Init(GameManager gm, Camera cam, Sprite[] frames, float fallSpeed, float driftSpeed, float spinDegPerSecond, float uniformScale)
+        public void Init(GameManager gm, Camera cam, SpriteRenderer spriteRenderer, Sprite[] frames, float fallSpeed, float uniformScale)
         {
             _gm = gm;
             _cam = cam;
+            _sr = spriteRenderer;
             _frames = frames;
 
-            if (_sr == null) _sr = GetComponent<SpriteRenderer>();
+            if (_sr == null) _sr = GetComponentInChildren<SpriteRenderer>();
             if (_rb == null) _rb = GetComponent<Rigidbody2D>();
 
             _baseUniformScale = uniformScale;
             transform.localScale = new Vector3(uniformScale, uniformScale, 1f);
-            _sr.sortingOrder = 20;
 
             if (_frames != null && _frames.Length > 0)
-                _sr.sprite = _frames[0];
+                SetSprite(_frames[0]);
 
-            ApplySpriteSizingAndCollider(_sr != null ? _sr.sprite : null);
+            // Keep the whole sprite off-screen while we lock trajectory/rotation.
+            EnsureFullyOffscreenBeforeShowing();
 
-            // Rotate a bit off-screen first (never visible), then choose the final travel angle
-            // and keep falling along that direction.
-            transform.rotation = Quaternion.Euler(0f, 0f, PreVisibleCounterClockwiseDeg);
-
+            // Pick a travel angle in [-30, +30] degrees (relative to straight down),
+            // then fall along that direction.
             var travelAngleDeg = UnityEngine.Random.Range(TravelAngleMinDeg, TravelAngleMaxDeg);
             var dir = (Vector2)(Quaternion.Euler(0f, 0f, travelAngleDeg) * Vector2.down);
             dir = dir.sqrMagnitude > 0.0001f ? dir.normalized : Vector2.down;
 
-            // Keep overall speed consistent across angles.
             _velocity = dir * fallSpeed;
 
-            // Align sprite so its "down" points along the movement direction (trail stays behind).
+            // Rotate sprite to match direction of travel (keeps the trail behind).
             transform.rotation = Quaternion.FromToRotation(Vector3.down, new Vector3(dir.x, dir.y, 0f));
-
-            // After final rotation is applied, ensure the whole sprite is still off-screen (prevents visible snap).
-            EnsureFullyOffscreenBeforeShowing();
         }
 
         private void Awake()
@@ -87,12 +79,12 @@ namespace Prototype7
             if (_frames == null || _frames.Length <= 1) return;
 
             _frameT += Time.deltaTime * animationFps;
-            if (_frameT < 1f) return;
-            _frameT -= 1f;
-
-            _frameIndex = (_frameIndex + 1) % _frames.Length;
-            _sr.sprite = _frames[_frameIndex];
-            ApplySpriteSizingAndCollider(_sr.sprite);
+            while (_frameT >= 1f)
+            {
+                _frameT -= 1f;
+                _frameIndex = (_frameIndex + 1) % _frames.Length;
+                SetSprite(_frames[_frameIndex]);
+            }
         }
 
         private void Move()
@@ -106,9 +98,7 @@ namespace Prototype7
 
         private void ApplySpriteSizingAndCollider(Sprite sprite)
         {
-            // Make soot sprites 5 pixels smaller (visual), without modifying source textures.
-            var shrinkFactor = GetPixelShrinkFactor(sprite, PixelShrink);
-            transform.localScale = new Vector3(_baseUniformScale * shrinkFactor, _baseUniformScale * shrinkFactor, 1f);
+            transform.localScale = new Vector3(_baseUniformScale, _baseUniformScale, 1f);
 
             // Fit the "hit area" to the circular bottom portion using the soot1 collider template.
             var circle = GetComponent<CircleCollider2D>();
@@ -116,6 +106,20 @@ namespace Prototype7
             {
                 circle.isTrigger = true;
                 HazardColliderTemplate.ApplyTo(circle, sprite);
+            }
+        }
+
+        private void SetSprite(Sprite sprite)
+        {
+            if (_sr == null || sprite == null) return;
+            _sr.sprite = sprite;
+            ApplySpriteSizingAndCollider(sprite);
+
+            // sootNew frames are sliced with varying rects and pivots, which can cause visible "jitter".
+            // If the renderer is on a child, offset it so the sprite's bounds center stays anchored.
+            if (_sr.transform != transform)
+            {
+                _sr.transform.localPosition = -sprite.bounds.center;
             }
         }
 
@@ -136,18 +140,6 @@ namespace Prototype7
                 p.y = desiredY;
                 transform.position = p;
             }
-        }
-
-        private static float GetPixelShrinkFactor(Sprite sprite, float pixels)
-        {
-            if (sprite == null) return 1f;
-
-            var rect = sprite.rect;
-            if (rect.width <= pixels || rect.height <= pixels) return 1f;
-
-            var fx = (rect.width - pixels) / rect.width;
-            var fy = (rect.height - pixels) / rect.height;
-            return Mathf.Clamp01(Mathf.Min(fx, fy));
         }
 
         private void DespawnIfOffscreen()

@@ -52,7 +52,13 @@ namespace Prototype7
             var go = new GameObject("Hazard");
             go.transform.SetParent(transform, worldPositionStays: true);
 
-            var sr = go.AddComponent<SpriteRenderer>();
+            var visual = new GameObject("Visual");
+            visual.transform.SetParent(go.transform, worldPositionStays: false);
+            visual.transform.localPosition = Vector3.zero;
+            visual.transform.localRotation = Quaternion.identity;
+            visual.transform.localScale = Vector3.one;
+
+            var sr = visual.AddComponent<SpriteRenderer>();
             sr.sortingOrder = 20;
 
             var rb = go.AddComponent<Rigidbody2D>();
@@ -83,8 +89,7 @@ namespace Prototype7
 
             go.transform.position = new Vector3(x, top, 0f);
 
-            // Drift + tilt range are used inside Hazard.Init to lock a readable trajectory (tilt matches travel direction).
-            hazard.Init(_gm, _cam, _hazardFrames, s.fallSpeed, s.driftAbsMax, s.spinAbsMaxDeg, s.scale);
+            hazard.Init(_gm, _cam, sr, _hazardFrames, s.fallSpeed * 1.10f, s.scale);
 
             // Spawn sound (phase-dependent): swoosh in phase 1/2, fireball in phase 3.
             _gm.PlayHazardSpawnSfx(phase);
@@ -97,12 +102,10 @@ namespace Prototype7
                 EruptionPhase.Phase1 => new PhaseSettings
                 {
                     fallSpeed = 2.9f,
-                    spawnIntervalMin = 0.85f,
-                    spawnIntervalMax = 1.25f,
+                    spawnIntervalMin = 0.85f * 0.90f,
+                    spawnIntervalMax = 1.25f * 0.90f,
                     // ~30% smaller than before, and clearly smaller than phase 2.
                     scale = 0.42f,
-                    driftAbsMax = 0.35f,
-                    spinAbsMaxDeg = 45f,
                     burstMin = 1,
                     burstMax = 1,
                 },
@@ -110,11 +113,9 @@ namespace Prototype7
                 {
                     fallSpeed = 4.2f,
                     // Phase 2 now uses Phase 1's spawn rate.
-                    spawnIntervalMin = 0.85f,
-                    spawnIntervalMax = 1.25f,
+                    spawnIntervalMin = 0.85f * 0.90f,
+                    spawnIntervalMax = 1.25f * 0.90f,
                     scale = 0.82f,
-                    driftAbsMax = 0.55f,
-                    spinAbsMaxDeg = 75f,
                     burstMin = 1,
                     burstMax = 1,
                 },
@@ -122,11 +123,9 @@ namespace Prototype7
                 {
                     fallSpeed = 6.6f,
                     // Phase 3 now uses Phase 2's spawn rate.
-                    spawnIntervalMin = 0.45f,
-                    spawnIntervalMax = 0.75f,
+                    spawnIntervalMin = 0.45f * 0.90f,
+                    spawnIntervalMax = 0.75f * 0.90f,
                     scale = 1.05f,
-                    driftAbsMax = 0.85f,
-                    spinAbsMaxDeg = 120f,
                     burstMin = 1,
                     burstMax = 1,
                 },
@@ -138,7 +137,7 @@ namespace Prototype7
             if (_hazardFrames != null && _hazardFrames.Length > 0) return;
 
 #if UNITY_EDITOR
-            _hazardFrames = EditorOnly_LoadSootFrames();
+            _hazardFrames = EditorOnly_LoadSootNewFrames();
 #endif
             if (_hazardFrames == null || _hazardFrames.Length == 0)
                 _hazardFrames = new[] { CreateSolidSprite(new Color(0.15f, 0.05f, 0.05f, 1f)) };
@@ -154,52 +153,49 @@ namespace Prototype7
         }
 
 #if UNITY_EDITOR
-        private static Sprite[] EditorOnly_LoadSootFrames()
+        private static Sprite[] EditorOnly_LoadSootNewFrames()
         {
-            // We pick one "main" sprite from each soot*.png (best-fit) to form an 8-frame loop.
-            // This avoids manual inspector wiring while still using the provided assets.
+            // sootNew is authored as 8 separate textures (soot1..soot8).
+            // Some of these textures may contain multiple sliced sprites (e.g. trail fragments);
+            // choose the "main" sprite from each texture (largest reasonable slice).
             var paths = new List<string>
             {
-                "Assets/Sprites/soot/soot1.png",
-                "Assets/Sprites/soot/soot2.png",
-                "Assets/Sprites/soot/soot3.png",
-                "Assets/Sprites/soot/soot4.png",
-                "Assets/Sprites/soot/soot5.png",
-                "Assets/Sprites/soot/soot6.png",
-                "Assets/Sprites/soot/soot7.png",
-                "Assets/Sprites/soot/soot8.png",
+                "Assets/Sprites/sootNew/soot1 (1).png",
+                "Assets/Sprites/sootNew/soot2 (1).png",
+                "Assets/Sprites/sootNew/soot3 (1).png",
+                "Assets/Sprites/sootNew/soot4 (1).png",
+                "Assets/Sprites/sootNew/soot5 (1).png",
+                "Assets/Sprites/sootNew/soot6 (1).png",
+                "Assets/Sprites/sootNew/soot7 (1).png",
+                "Assets/Sprites/sootNew/soot8 (1).png",
             };
 
             var frames = new List<Sprite>(capacity: paths.Count);
             foreach (var path in paths)
             {
                 var all = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path);
+                if (all == null || all.Length == 0) continue;
+
                 Sprite best = null;
-                var bestScore = float.NegativeInfinity;
+                var bestArea = -1f;
 
                 foreach (var a in all)
                 {
                     if (a is not Sprite s) continue;
                     var r = s.rect;
-                    if (r.width < 24 || r.height < 24) continue;
-                    if (r.width > 1400 || r.height > 1400) continue; // ignore huge background-ish slices
 
-                    // Prefer roughly "hazard-ish" sizes.
+                    // Filter out tiny fragments from auto-slicing.
+                    if (r.width < 32 || r.height < 32) continue;
+
                     var area = r.width * r.height;
-                    var sizeBias =
-                        (r.width >= 40 && r.width <= 90 ? 1.2f : 1f) *
-                        (r.height >= 55 && r.height <= 120 ? 1.2f : 1f);
-
-                    var score = area * sizeBias;
-                    if (score > bestScore)
+                    if (area > bestArea)
                     {
-                        bestScore = score;
+                        bestArea = area;
                         best = s;
                     }
                 }
 
-                if (best != null)
-                    frames.Add(best);
+                if (best != null) frames.Add(best);
             }
 
             return frames.ToArray();
@@ -212,8 +208,6 @@ namespace Prototype7
             public float spawnIntervalMin;
             public float spawnIntervalMax;
             public float scale;
-            public float driftAbsMax;
-            public float spinAbsMaxDeg;
             public int burstMin;
             public int burstMax;
         }
