@@ -10,6 +10,10 @@ namespace Prototype7
         [SerializeField] private float spawnTopPadding = 1.5f;
         [SerializeField] private float spawnSidePadding = 0.6f;
 
+        [Header("Hazard Prefab (Inspector wiring)")]
+        [Tooltip("Optional but recommended for builds: a prefab with Hazard + Rigidbody2D + CircleCollider2D (IsTrigger) + child SpriteRenderer.")]
+        [SerializeField] private GameObject hazardPrefab;
+
         [Header("Hazard Visuals (Inspector wiring)")]
         [Tooltip("Optional: assign 8 sprites (frames) here for builds. If empty, the editor will auto-load from Assets/Sprites/sootNew/.")]
         [SerializeField] private Sprite[] hazardFramesOverride;
@@ -27,6 +31,17 @@ namespace Prototype7
             _gm = gm;
             _cam = cam;
             _rng ??= new System.Random();
+
+            // Scene wiring safety: the spawner object should not be scaled/rotated, otherwise it will
+            // indirectly scale spawned hazards (and their colliders) and cause "hits" that don't match visuals.
+            transform.localScale = Vector3.one;
+            transform.localRotation = Quaternion.identity;
+
+            // Also, the spawner itself should not have renderers/colliders.
+            var strayRenderer = GetComponent<SpriteRenderer>();
+            if (strayRenderer != null) strayRenderer.enabled = false;
+            var strayCol = GetComponent<Collider2D>();
+            if (strayCol != null) strayCol.enabled = false;
 
             if (hazardFramesOverride != null && hazardFramesOverride.Length > 0)
                 _hazardFrames = hazardFramesOverride;
@@ -57,27 +72,41 @@ namespace Prototype7
 
         private void SpawnOne(PhaseSettings s, EruptionPhase phase, int burstIndex, int burstCount)
         {
-            var go = new GameObject("Hazard");
-            go.transform.SetParent(transform, worldPositionStays: true);
+            GameObject go;
+            Hazard hazard;
+            SpriteRenderer sr;
 
-            var visual = new GameObject("Visual");
-            visual.transform.SetParent(go.transform, worldPositionStays: false);
-            visual.transform.localPosition = Vector3.zero;
-            visual.transform.localRotation = Quaternion.identity;
-            visual.transform.localScale = Vector3.one;
+            if (hazardPrefab != null)
+            {
+                go = Instantiate(hazardPrefab);
+                go.name = "Hazard";
+                go.transform.SetParent(transform, worldPositionStays: true);
 
-            var sr = visual.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 20;
+                hazard = go.GetComponent<Hazard>();
+                sr = go.GetComponentInChildren<SpriteRenderer>();
+            }
+            else
+            {
+                // Fallback runtime hazard (no collider auto-config; user requested manual collider setup).
+                go = new GameObject("Hazard");
+                go.transform.SetParent(transform, worldPositionStays: true);
 
-            var rb = go.AddComponent<Rigidbody2D>();
-            rb.bodyType = RigidbodyType2D.Kinematic;
-            rb.gravityScale = 0f;
-            rb.freezeRotation = true;
+                var visual = new GameObject("Visual");
+                visual.transform.SetParent(go.transform, worldPositionStays: false);
+                visual.transform.localPosition = Vector3.zero;
+                visual.transform.localRotation = Quaternion.identity;
+                visual.transform.localScale = Vector3.one;
 
-            var col = go.AddComponent<CircleCollider2D>();
-            col.isTrigger = true;
+                sr = visual.AddComponent<SpriteRenderer>();
+                sr.sortingOrder = 20;
 
-            var hazard = go.AddComponent<Hazard>();
+                var rb = go.AddComponent<Rigidbody2D>();
+                rb.bodyType = RigidbodyType2D.Kinematic;
+                rb.gravityScale = 0f;
+                rb.freezeRotation = true;
+
+                hazard = go.AddComponent<Hazard>();
+            }
 
             var camHalfH = _cam.orthographicSize;
             var camHalfW = camHalfH * _cam.aspect;
@@ -97,7 +126,8 @@ namespace Prototype7
 
             go.transform.position = new Vector3(x, top, 0f);
 
-            hazard.Init(_gm, _cam, sr, _hazardFrames, s.fallSpeed * 1.10f, s.scale);
+            if (hazard != null)
+                hazard.Init(_gm, _cam, sr, _hazardFrames, s.fallSpeed * 1.10f, s.scale);
 
             // Spawn sound (phase-dependent): swoosh in phase 1/2, fireball in phase 3.
             _gm.PlayHazardSpawnSfx(phase);

@@ -16,6 +16,13 @@ namespace Prototype7
         [SerializeField] private Sprite dinoLeftSprite;
         [SerializeField] private Sprite dinoRightSprite;
 
+        [Header("Collision (tuning)")]
+        [SerializeField, Range(0.1f, 1f)] private float colliderWidthFraction = 0.45f;
+        [SerializeField, Range(0.1f, 1f)] private float colliderHeightFraction = 0.70f;
+        [SerializeField, Range(-0.5f, 0.5f)] private float colliderCenterYOffsetFraction = -0.08f;
+        [SerializeField, Range(0f, 40f)] private float colliderExtraLeftPixels = 12f;
+        [SerializeField, Range(0f, 40f)] private float colliderFacingShiftPixels = 12f;
+
         private GameManager _gm;
         private Camera _cam;
         private Rigidbody2D _rb;
@@ -56,6 +63,17 @@ namespace Prototype7
                 _defaultSprite = dinoRightSprite != null ? dinoRightSprite : dinoLeftSprite;
 
             ApplyFacingSprite(force: true);
+
+            // Restore the original placement behavior (bootstrapper put the player near bottom-center).
+            if (_cam != null)
+            {
+                var bottomY = _cam.transform.position.y - _cam.orthographicSize;
+                var safeY = bottomY + 0.9f;
+                var p = transform.position;
+                transform.position = new Vector3(_cam.transform.position.x, safeY, p.z);
+            }
+
+            UpdatePlayerCollider();
         }
 
         private void Reset()
@@ -152,6 +170,43 @@ namespace Prototype7
                 _sr.color = Color.white;
 
             FitSpriteToScreenPixels(target);
+
+            // Keep collider aligned to current sprite + facing direction.
+            UpdatePlayerCollider();
+        }
+
+        private void UpdatePlayerCollider()
+        {
+            // The BoxCollider2D's "center" is determined by its offset (local space).
+            // We recompute it when the sprite or facing changes.
+            if (_sr == null || _sr.sprite == null) return;
+
+            var bodyBox = _col as BoxCollider2D;
+            if (bodyBox == null) bodyBox = GetComponent<BoxCollider2D>();
+            if (bodyBox == null) bodyBox = gameObject.AddComponent<BoxCollider2D>();
+
+            // Disable any other collider type so only this hitbox is used.
+            if (_col != null && _col != bodyBox) _col.enabled = false;
+            _col = bodyBox;
+
+            bodyBox.isTrigger = false;
+
+            var s = _sr.sprite.bounds.size;
+            var w = Mathf.Max(0.01f, s.x * colliderWidthFraction) + 2f;
+            var h = Mathf.Max(0.01f, s.y * colliderHeightFraction);
+
+            var ppu = Mathf.Max(0.001f, _sr.sprite.pixelsPerUnit);
+            var extraLeftLocal = colliderExtraLeftPixels / ppu;
+            bodyBox.size = new Vector2(w + extraLeftLocal, h);
+
+            var facingShiftLocal = colliderFacingShiftPixels / ppu;
+            var facingDir = _facing < 0 ? -1f : 1f;
+
+            var offsetX = (-extraLeftLocal * 0.5f) + (facingShiftLocal * facingDir);
+            var offsetY = s.y * colliderCenterYOffsetFraction;
+            // Keep the current left-facing placement, but nudge the hitbox right when facing right.
+            var rightFacingExtra = _facing > 0 ? 2.1f : 0f;
+            bodyBox.offset = new Vector2((offsetX - 1.1f) + rightFacingExtra, offsetY);
         }
 
         private void FitSpriteToScreenPixels(Sprite sprite)
