@@ -76,6 +76,12 @@ namespace Prototype7
             UpdatePlayerCollider();
         }
 
+        private void Update()
+        {
+            if (IsEscapePressed())
+                QuitGame();
+        }
+
         private void Reset()
         {
             _rb = GetComponent<Rigidbody2D>();
@@ -149,6 +155,25 @@ namespace Prototype7
             return kb != null && kb.rightArrowKey.isPressed;
 #else
             return Input.GetKey(KeyCode.RightArrow);
+#endif
+        }
+
+        private static bool IsEscapePressed()
+        {
+#if ENABLE_INPUT_SYSTEM
+            var kb = Keyboard.current;
+            return kb != null && kb.escapeKey.wasPressedThisFrame;
+#else
+            return Input.GetKeyDown(KeyCode.Escape);
+#endif
+        }
+
+        private static void QuitGame()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
 #endif
         }
 

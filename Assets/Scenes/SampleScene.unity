@@ -300,13 +300,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Prototype7.PlayerMovement
   moveSpeedUnitsPerSecond: 8.5
   horizontalPadding: 0.2
-  targetScreenPixels: 160
+  targetScreenPixels: 186
   dinoLeftSprite: {fileID: 21300000, guid: 50434b88957f54e3b86f13a80646e8ac, type: 3}
   dinoRightSprite: {fileID: 21300000, guid: f35b6250a8dec48858c8accc7bb6a6a3, type: 3}
   colliderWidthFraction: 0.116
   colliderHeightFraction: 0.7
   colliderCenterYOffsetFraction: -0.08
   colliderExtraLeftPixels: 12
+  colliderFacingShiftPixels: 12
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
