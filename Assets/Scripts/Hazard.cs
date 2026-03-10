@@ -4,6 +4,7 @@ namespace Prototype7
 {
     public sealed class Hazard : MonoBehaviour
     {
+        private const float PixelShrink = 5f;
         private const float OffscreenSafetyPaddingY = 0.05f;
         private const float TravelAngleMinDeg = -30f;
         private const float TravelAngleMaxDeg = 30f;
@@ -22,6 +23,7 @@ namespace Prototype7
         private Vector2 _velocity;
 
         private float _baseUniformScale = 1f;
+        private float _shrinkFactor = 1f;
 
         public void Init(GameManager gm, Camera cam, SpriteRenderer spriteRenderer, Sprite[] frames, float fallSpeed, float uniformScale)
         {
@@ -34,10 +36,13 @@ namespace Prototype7
             if (_rb == null) _rb = GetComponent<Rigidbody2D>();
 
             _baseUniformScale = uniformScale;
-            transform.localScale = new Vector3(uniformScale, uniformScale, 1f);
 
             if (_frames != null && _frames.Length > 0)
                 SetSprite(_frames[0]);
+
+            // Match the original hazard sizing feel: apply a small (~5px) visual shrink.
+            _shrinkFactor = GetPixelShrinkFactor(_sr != null ? _sr.sprite : null, PixelShrink);
+            transform.localScale = new Vector3(_baseUniformScale * _shrinkFactor, _baseUniformScale * _shrinkFactor, 1f);
 
             // Keep the whole sprite off-screen while we lock trajectory/rotation.
             EnsureFullyOffscreenBeforeShowing();
@@ -98,7 +103,8 @@ namespace Prototype7
 
         private void ApplySpriteSizingAndCollider(Sprite sprite)
         {
-            transform.localScale = new Vector3(_baseUniformScale, _baseUniformScale, 1f);
+            // Keep scale stable across animation frames (prevents jitter).
+            transform.localScale = new Vector3(_baseUniformScale * _shrinkFactor, _baseUniformScale * _shrinkFactor, 1f);
 
             // Fit the "hit area" to the circular bottom portion using the soot1 collider template.
             var circle = GetComponent<CircleCollider2D>();
@@ -107,6 +113,18 @@ namespace Prototype7
                 circle.isTrigger = true;
                 HazardColliderTemplate.ApplyTo(circle, sprite);
             }
+        }
+
+        private static float GetPixelShrinkFactor(Sprite sprite, float pixels)
+        {
+            if (sprite == null) return 1f;
+
+            var rect = sprite.rect;
+            if (rect.width <= pixels || rect.height <= pixels) return 1f;
+
+            var fx = (rect.width - pixels) / rect.width;
+            var fy = (rect.height - pixels) / rect.height;
+            return Mathf.Clamp01(Mathf.Min(fx, fy));
         }
 
         private void SetSprite(Sprite sprite)

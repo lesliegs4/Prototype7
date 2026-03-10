@@ -12,6 +12,10 @@ namespace Prototype7
         [SerializeField] private float horizontalPadding = 0.2f;
         [SerializeField] private float targetScreenPixels = 80f;
 
+        [Header("Sprites (Inspector wiring)")]
+        [SerializeField] private Sprite dinoLeftSprite;
+        [SerializeField] private Sprite dinoRightSprite;
+
         private GameManager _gm;
         private Camera _cam;
         private Rigidbody2D _rb;
@@ -19,8 +23,6 @@ namespace Prototype7
         private SpriteRenderer _sr;
 
         private Sprite _defaultSprite;
-        private Sprite _dinoLeft;
-        private Sprite _dinoRight;
         private int _facing = 1; // -1 left, +1 right
         private Vector3 _baseScale = Vector3.one;
 
@@ -34,10 +36,25 @@ namespace Prototype7
             _col = col;
 
             if (_sr == null) _sr = GetComponent<SpriteRenderer>();
+            if (_sr != null) _sr.sortingOrder = 10;
             if (_sr != null && _defaultSprite == null) _defaultSprite = _sr.sprite;
             _baseScale = transform.localScale;
 
+            // Ensure consistent "only horizontal movement" behavior regardless of scene setup.
+            // The auto-bootstrapper used a kinematic body with no gravity; keep the same here.
+            if (_rb != null)
+            {
+                _rb.bodyType = RigidbodyType2D.Kinematic;
+                _rb.gravityScale = 0f;
+                _rb.freezeRotation = true;
+            }
+
             TryAutoLoadDinoSprites();
+
+            // If nothing is assigned on the SpriteRenderer, prefer real art if provided.
+            if (_sr != null && _sr.sprite == null)
+                _defaultSprite = dinoRightSprite != null ? dinoRightSprite : dinoLeftSprite;
+
             ApplyFacingSprite(force: true);
         }
 
@@ -122,8 +139,8 @@ namespace Prototype7
             if (_sr == null) return;
 
             var target =
-                _facing < 0 ? (_dinoLeft != null ? _dinoLeft : _defaultSprite) :
-                (_dinoRight != null ? _dinoRight : _defaultSprite);
+                _facing < 0 ? (dinoLeftSprite != null ? dinoLeftSprite : _defaultSprite) :
+                (dinoRightSprite != null ? dinoRightSprite : _defaultSprite);
 
             if (!force && _sr.sprite == target) return;
             if (target == null) return;
@@ -131,7 +148,7 @@ namespace Prototype7
             _sr.sprite = target;
 
             // If we have real art, don't tint it with the prototype cyan.
-            if (_dinoLeft != null || _dinoRight != null)
+            if (dinoLeftSprite != null || dinoRightSprite != null)
                 _sr.color = Color.white;
 
             FitSpriteToScreenPixels(target);
@@ -161,11 +178,11 @@ namespace Prototype7
 
         private void TryAutoLoadDinoSprites()
         {
-            if (_dinoLeft != null && _dinoRight != null) return;
+            if (dinoLeftSprite != null && dinoRightSprite != null) return;
 
 #if UNITY_EDITOR
-            _dinoLeft ??= EditorOnly_LoadBestSpriteAtPath("Assets/Sprites/dinoLeft.png");
-            _dinoRight ??= EditorOnly_LoadBestSpriteAtPath("Assets/Sprites/dinoRight.png");
+            dinoLeftSprite ??= EditorOnly_LoadBestSpriteAtPath("Assets/Sprites/dinoLeft.png");
+            dinoRightSprite ??= EditorOnly_LoadBestSpriteAtPath("Assets/Sprites/dinoRight.png");
 #endif
         }
 

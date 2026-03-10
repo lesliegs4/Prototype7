@@ -31,6 +31,11 @@ namespace Prototype7
         [Header("Restart")]
         [SerializeField] private float restartDelaySeconds = 0.6f;
 
+        [Header("Background Sprites (Inspector wiring)")]
+        [SerializeField] private Sprite phase1Background;
+        [SerializeField] private Sprite phase2Background;
+        [SerializeField] private Sprite phase3Background;
+
         [Header("Audio (optional)")]
         [SerializeField] private AudioClip swooshForward;
         [SerializeField] private AudioClip swooshBack;
@@ -80,6 +85,11 @@ namespace Prototype7
         {
             _background = background;
             TryAutoLoadBackgroundSprites();
+
+            // If the scene is wired and the user already set a background sprite in the renderer,
+            // treat that as phase 1 unless explicitly overridden.
+            if (_phase1 == null && _background != null && _background.sprite != null)
+                _phase1 = _background.sprite;
         }
 
         public void BeginRun()
@@ -414,6 +424,10 @@ namespace Prototype7
         private void TryAutoLoadBackgroundSprites()
         {
             if (_phase1 != null && _phase2 != null && _phase3 != null) return;
+
+            _phase1 ??= phase1Background;
+            _phase2 ??= phase2Background;
+            _phase3 ??= phase3Background;
 
 #if UNITY_EDITOR
             _phase1 ??= TryFindSpriteByGuidOrName(nameContains: "Phase1");

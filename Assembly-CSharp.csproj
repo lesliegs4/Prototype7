@@ -53,6 +53,7 @@
     <Compile Include="Assets/Scripts/Hazard.cs" />
     <Compile Include="Assets/Scripts/HazardColliderTemplate.cs" />
     <Compile Include="Assets/Scripts/PlayerMovement.cs" />
+    <Compile Include="Assets/Scripts/Prototype7SceneWiring.cs" />
     <Compile Include="Assets/Scripts/PrototypeBootstrapper.cs" />
     <Compile Include="Assets/Scripts/GameManager.cs" />
   </ItemGroup>

@@ -10,6 +10,10 @@ namespace Prototype7
         [SerializeField] private float spawnTopPadding = 1.5f;
         [SerializeField] private float spawnSidePadding = 0.6f;
 
+        [Header("Hazard Visuals (Inspector wiring)")]
+        [Tooltip("Optional: assign 8 sprites (frames) here for builds. If empty, the editor will auto-load from Assets/Sprites/sootNew/.")]
+        [SerializeField] private Sprite[] hazardFramesOverride;
+
         private GameManager _gm;
         private Camera _cam;
 
@@ -23,6 +27,10 @@ namespace Prototype7
             _gm = gm;
             _cam = cam;
             _rng ??= new System.Random();
+
+            if (hazardFramesOverride != null && hazardFramesOverride.Length > 0)
+                _hazardFrames = hazardFramesOverride;
+
             TryAutoLoadHazardFrames();
         }
 

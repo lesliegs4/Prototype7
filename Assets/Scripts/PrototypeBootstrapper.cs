@@ -38,6 +38,9 @@ namespace Prototype7
             if (scene.IsValid() && scene.handle == _lastBootstrappedSceneHandle) return;
             if (scene.IsValid()) _lastBootstrappedSceneHandle = scene.handle;
 
+            // If the scene is wired via Inspector, don't auto-build anything.
+            if (HasSceneWiring()) return;
+
             var cam = Camera.main;
             if (cam == null)
             {
@@ -86,6 +89,13 @@ namespace Prototype7
             EnsureBgMusic(root.transform);
 
             gm.BeginRun();
+        }
+
+        private static bool HasSceneWiring()
+        {
+            // Include inactive objects so a disabled wiring object still prevents auto-bootstrap.
+            var all = Object.FindObjectsOfType(typeof(Prototype7SceneWiring), includeInactive: true);
+            return all != null && all.Length > 0;
         }
 
         private static void EnsureRoot(out GameObject root)
